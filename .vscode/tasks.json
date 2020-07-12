@@ -1,0 +1,52 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Hello",
+            "type":  "shell",
+            "command": "g++",
+            "args":[
+                "-I",
+                "${workspaceFolder}/include/",
+                "-I",
+                "${workspaceFolder}/include/mqtt/",
+                "-I",
+                "${workspaceFolder}/include/mqtt/mqtt_packet/",
+                "-I",
+                "${workspaceFolder}/include/mqtt/cJSON/",
+                "-I",
+                "${workspaceFolder}/include/mqtt/ZHS/",
+                "-I",
+                "${workspaceFolder}/include/mqtt/SQLITE3/",
+                "-I",
+                "${workspaceFolder}/include/navigation/",
+                "-I",
+                "${workspaceFolder}/include/obstacle_include/",
+                "-I",
+                "${workspaceFolder}/user/",
+
+                "${workspaceFolder}/bsp/*.cpp",
+                "${workspaceFolder}/user/*.cpp", 
+                "${workspaceFolder}/car_mode/*.cpp", 
+                "${workspaceFolder}/mqtt/*.cpp", 
+                "${workspaceFolder}/obstacle/*.cpp", 
+                "-Wl,-rpath=${workspaceFolder}/lib/hps3d_lib/",
+                "-L${workspaceFolder}/lib/hps3d_lib/",
+                "-lhps3d641720",
+                "-o", 
+                "${workspaceFolder}/vs_test",
+                "${workspaceFolder}/lib/mqtt_lib/libmqtta.a",
+                "-lm",
+                "-ldl",
+                "-g",
+                "-lpthread"
+                ], //这里的*.cpp是关键 
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

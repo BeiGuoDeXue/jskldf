@@ -1,0 +1,20 @@
+/etc/udev/rules.d
+KERNELS=="2-7.3",  MODE:="0666", GROUP:="dialout",  SYMLINK+="ttyUSB001"
+重新加载udev规则
+sudo service udev reload
+sudo service udev restart
+
+ls -l /dev |grep ttyUSB*  查看dev中所有的ttyUSB相关的
+udevadm info -a -n /dev/ttyUSB0   方便查看到kernel
+lsusb  查看所有的usb，但是应该查看的是插入的外设，查看范围较少，但是常用于查看usb的硬件设备地址
+dmesg | grep ttyUSB*   查看dmesg中与ttyUSB相关的信息
+dmesg查看所有的设备信息，包括内核的设备
+
+rule文件
+#代表注释
+# KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE:="0777", SYMLINK+="RPLIDAR_A3"
+# KERNEL=="ttyUSB*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", MODE:="0777", SYMLINK+="serial_imu"
+# KERNEL=="ttyUSB*", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE:="0777", SYMLINK+="serial_odom"
+
+KERNELS=="1-2",  MODE:="0666", GROUP:="dialout",  SYMLINK+="ttyUSB01"
+KERNELS=="1-1",  MODE:="0666", GROUP:="dialout",  SYMLINK+="ttyUSB02"

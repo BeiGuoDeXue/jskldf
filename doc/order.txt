@@ -1,0 +1,183 @@
+发现新标签：（上报）
+        str[0] = 0x55;
+        str[1] = 8;
+        str[2] = 0x36;
+        //memcpy(str+3, addr64, 8);
+        str[3] = (char)(addr64>>56);
+        str[4] = (char)(addr64>>48);
+        str[5] = (char)(addr64>>40);
+        str[6] = (char)(addr64>>32);
+        str[7] = (char)(addr64>>24);
+        str[8] = (char)(addr64>>16);
+        str[9] = (char)(addr64>>8);
+        str[10] = (char)addr64;
+        str[11] = 0x93;//0x55+8+0x36
+        for(i=3; i<11; i++)
+        {
+          str[11]+= str[i];
+        }
+
+        port_tx_msg((uint8_t*)str, 12);//strlen(str));
+		
+添加标签： （下发）
+ /* "addtag 11AABB4455FF7788 10AA 1 2 1" */
+//        n = sscanf(text, "%8s %08x%08x %x %x %x %x",
+//                          tmp, &addr1, &addr2, &addr16, &multFast, &multSlow, &mode);
+//        if (text[0]== 0xAA && text[2] == 0x20 && text[1] == 0x0E)
+//        {
+          addr1 = (unsigned int)text[1];
+          addr1 = (unsigned int)(addr1<<8)+text[2];
+          addr1 = (unsigned int)(addr1<<8)+text[3];
+          addr1 = (unsigned int)(addr1<<8)+text[4];
+          addr2 = (unsigned int)text[5];
+          addr2 = (unsigned int)(addr2<<8) + text[6];
+          addr2 = (unsigned int)(addr2<<8) + text[7];
+          addr2 = (unsigned int)(addr2<<8) + text[8];
+          addr16 = (unsigned int)text[9];
+          addr16 = (unsigned int)(addr16<<8) + text[10];
+          multFast = (unsigned int)text[11];
+          multFast = (unsigned int)(multFast<<8) + text[12];
+          multSlow = (unsigned int)text[13];
+          mode = (unsigned int)text[14];
+		  
+添加标签后 返回消息：(上报)
+ tag->multFast = (uint16_t)multFast;
+                tag->multSlow = (uint16_t)multSlow;
+                tag->mode = (uint16_t)mode;
+                tag->reqUpdatePending = 1;                //update Tag's configuration on its next Poll
+
+//                hlen = sprintf(str,"JS%04X", 0x5A5A);    // reserve space for length of JS object
+//                sprintf(&str[strlen(str)],"{\"TagAdded\": ");
+//
+//                fill_json_tag(&str[strlen(str)], tag);
+//
+//                sprintf(&str[strlen(str)],"}"); //\r\n
+//
+//                sprintf(&str[2],"%04X",strlen(str)-hlen);//add formatted 4X of length, this will kill first '{'
+//                str[hlen]='{';                            //restore the start bracket
+//
+//                sprintf(&str[strlen(str)],"\r\n");
+//                port_tx_msg((uint8_t*)str, strlen(str));
+
+                str[0] = 0x55;
+                str[1] = 0x11;
+                str[2] = 0x20;
+                str[3] = (char)(tag->slot>>8);
+                str[4] = (char)tag->slot;
+                str[5] = (char)(tag->addr64>>56);
+                str[6] = (char)(tag->addr64>>48);
+                str[7] = (char)(tag->addr64>>40);
+                str[8] = (char)(tag->addr64>>32);
+                str[9] = (char)(tag->addr64>>24);
+                str[10] = (char)(tag->addr64>>16);
+                str[11] = (char)(tag->addr64>>8);
+                str[12] = (char)tag->addr64;
+                str[13] = (char)(tag->addr16>>8);
+                str[14] = (char)tag->addr16;
+                str[15] = (char)(tag->multFast>>8);
+                str[16] = (char)tag->multFast;
+                str[17] = (char)(tag->multSlow>>8);
+                str[18] = (char)tag->multSlow;
+                str[19] = (char)tag->mode;
+                str[20] = 0x86;//0x55+0x11+0x20
+                for(i=3; i<20; i++)
+                  str[20] = str[20]+str[i];
+				  
+				  
+删除标签和删除后返回消息
+
+下发
+        /* "delTag 11AABB4455FF7788" */
+        //sscanf(text, "%8s %08x%08x", tmp, &addr1, &addr2);
+
+//        if (text[0]== 0xAA && text[2] == 0x21 && text[1] == 0x08)
+//        {
+//          addr1 = text[1];
+//          addr1 = (addr1<<8)+text[2];
+//          addr1 = (addr1<<8)+text[3];
+//          addr1 = (addr1<<8)+text[4];
+//          addr2 = text[5];
+//          addr2 = (addr2<<8) + text[6];
+//          addr2 = (addr2<<8) + text[7];
+//          addr2 = (addr2<<8) + text[8];
+
+          addr1 = (unsigned int)text[1];
+          addr1 = (unsigned int)(addr1<<8)+text[2];
+          addr1 = (unsigned int)(addr1<<8)+text[3];
+          addr1 = (unsigned int)(addr1<<8)+text[4];
+          addr2 = (unsigned int)text[5];
+          addr2 = (unsigned int)(addr2<<8) + text[6];
+          addr2 = (unsigned int)(addr2<<8) + text[7];
+          addr2 = (unsigned int)(addr2<<8) + text[8];
+
+          addr64 = (uint64_t)((((uint64_t)addr1)<<32) | (uint64_t)addr2);
+          if(addr64 > 0xFFFF)
+            del_tag64_from_knownTagList(addr64);
+          else
+            del_tag16_from_knownTagList((uint16_t)addr64);
+
+
+
+//上报
+//          hlen = sprintf(str,"JS%04X", 0x5A5A);    // reserve space for length of JS object
+//          sprintf(&str[strlen(str)],"{\"TagDeleted\": \"%08x%08x\"}", addr1 , addr2);
+//
+//          sprintf(&str[2],"%04X",strlen(str)-hlen);//add formatted 4X of length, this will erase first '{'
+//          str[hlen]='{';                            //restore the start bracket
+//          sprintf(&str[strlen(str)],"\r\n");
+          str[0] = 0x55;
+          str[1] = 0x08;
+          str[2] = 0x21;
+          str[3] = text[1];
+          str[4] = text[2];
+          str[5] = text[3];
+          str[6] = text[4];
+          str[7] = text[5];
+          str[8] = text[6];
+          str[9] = text[7];
+          str[10] = text[8];
+          str[11] = 0x7E;//0x55+0x08+0x21
+          for(i=3; i<11; i++)
+            str[11] = str[11] + str[i];
+          port_tx_msg((uint8_t*)str, 12);
+          ret = NULL;
+//        }
+        
+//        hlen = sprintf(str,"JS%04X", 0x5A5A);    // reserve space for length of JS object
+//        sprintf(&str[strlen(str)],"{\"TagDeleted\": \"%08x%08x\"}", addr1 , addr2);
+//
+//        sprintf(&str[2],"%04X",strlen(str)-hlen);//add formatted 4X of length, this will erase first '{'
+//        str[hlen]='{';                            //restore the start bracket
+//        sprintf(&str[strlen(str)],"\r\n");
+//        port_tx_msg((uint8_t*)str, strlen(str));
+
+//        ret = CMD_FN_RET_OK;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+5523370000000000000000000000000000000000000000000000000000000000000000000000AF
+552337000000000000DEADBEEF00000000000000000000000000000000000000000000000000E7
+552337000000000000FEEBDAED000000000000000000000000000000000000000000000000005F
+ms0=1588908983557  read_len0: 12
+55083605a2610048e2c99422  //
+55083605a2610048e2c99422
+onec receive all data/nms0=1588908984488  read_len0: 12
+550836082261440dd18b12dd
+550836082261440dd18b12dd
+onec receive all data/nms0=1588908987296  read_len0: 12
+550836082261444de34a00dc
+550836082261444de34a00dc

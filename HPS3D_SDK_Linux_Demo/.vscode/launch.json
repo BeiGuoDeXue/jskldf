@@ -1,0 +1,36 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch", //Name 无关紧要
+            "type": "cppdbg",       //不可修改
+            "request": "launch",    //请求的方式,这里下面的文章会详细说明
+            //"program": "${workspaceFolder}/a.out",  //解释一下, ${workspaceFolder}是当前文件空间的相对路径 a.out是目标文件
+                                                      //a.out我们完全可以修改,我们就修改成 ${fileBasenameNoExtension}.out
+            "program": "${workspaceFolder}/app",
+            //"program": "${workspaceFolder}/${fileBasenameNoExtension}.out",
+                                                      //至于 workspaceFolder fileBasenameNoExtension见名思意
+                                                      //另外关于.json中的各种替换变量的意思详见下面这位大神的文章:
+                                                      //https://blog.csdn.net/bat67/article/details/78302870                                           
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+　　　　　　　　　　　　　　　　　　　　　　　
+            "preLaunchTask": "Hello"    //默认不会生成,但是非常重要,因为Launch.json文件负责启动任务,简单说就是执行文件,这个要与 task.json 中的 label 名称一致 
+                                        //而Task.json文件就是负责配置相关任务,简单说就是负责编译与链接并生成可执行文件.所以launch.json文件前,必须要执行Task.json文件
+        }
+    ]
+}

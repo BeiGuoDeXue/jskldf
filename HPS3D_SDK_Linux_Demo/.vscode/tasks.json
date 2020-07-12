@@ -1,0 +1,27 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Hello",
+            "type":  "shell",
+            "command": "g++",
+            "args":[
+                "-I",
+                "${workspaceFolder}/",
+                "${workspaceFolder}/*.c",
+                "-Wl,-rpath=./",
+                "-L./",
+                "-lhps3d64",
+                "-o", 
+                "${workspaceFolder}/app",
+                "-g",
+                ], //这里的*.cpp是关键 
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
